@@ -1,0 +1,18 @@
+{
+  "name": "lucybot-documentation-starter",
+  "version": "1.0.1",
+  "description": "Customizable Documentation for REST APIs",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucyBot-Inc/documentation-starter.git"
+  },
+  "author": "LucyBot, Inc.",
+  "bugs": {
+    "url": "https://github.com/LucyBot-Inc/documentation-starter/issues"
+  },
+  "homepage": "https://github.com/LucyBot-Inc/documentation-starter#readme"
+}
