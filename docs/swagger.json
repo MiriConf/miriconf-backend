@@ -74,21 +74,38 @@
             }
         },
         "model.Team": {
+            "description": "Team information",
             "type": "object",
             "properties": {
+                "createdat": {
+                    "description": "Creation timestamp",
+                    "type": "string",
+                    "format": "string",
+                    "example": "08-23-2022"
+                },
+                "department": {
+                    "description": "Parent department of team",
+                    "type": "string",
+                    "format": "string",
+                    "example": "cybersecurity"
+                },
                 "id": {
+                    "description": "ID of team",
                     "type": "integer",
                     "format": "int64",
                     "example": 1
                 },
                 "name": {
+                    "description": "Name of team",
                     "type": "string",
-                    "example": "team name"
+                    "format": "string",
+                    "example": "cyber operations"
                 },
-                "uuid": {
+                "tags": {
+                    "description": "Tags assigned to the team using the UI",
                     "type": "string",
-                    "format": "uuid",
-                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                    "format": "string",
+                    "example": "security"
                 }
             }
         }

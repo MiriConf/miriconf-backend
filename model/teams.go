@@ -1,21 +1,28 @@
 package model
 
-import (
-	uuid "github.com/gofrs/uuid"
-)
-
-var teams = []Team{
-	{ID: 1, Name: "Frontend Developers"},
-	{ID: 2, Name: "Backend Developers"},
-	{ID: 3, Name: "DevOps Team"},
-}
-
+// Team model info
+// @Description Team information
 type Team struct {
-	ID   int       `json:"id" example:"1" format:"int64"`
-	Name string    `json:"name" example:"team name"`
-	UUID uuid.UUID `json:"uuid" example:"550e8400-e29b-41d4-a716-446655440000" format:"uuid"`
+	// ID of team
+	ID int `json:"id" example:"1" format:"int64"`
+	// Name of team
+	Name string `json:"name" example:"cyber operations" format:"string"`
+	// Parent department of team
+	Department string `json:"department" example:"cybersecurity" format:"string"`
+	// Tags assigned to the team using the UI
+	Tags string `json:"tags" example:"security" format:"string"`
+	// Creation timestamp
+	CreatedAt string `json:"createdat" example:"08-23-2022" format:"string"`
 }
 
-func TeamsAll() []Team {
-	return teams
+func TeamsAll() Team {
+	testData := Team{ID: 4, Name: "backend development team", Department: "development", Tags: "development", CreatedAt: "08-5-2022"} 
+    
+	return testData
+	//newClient := database.MongoConnection()
+	//database.GetTeams(newClient)
 }
+
+//func TeamsAll() []Team {
+//	return teams
+//}

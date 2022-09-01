@@ -16,6 +16,4 @@ COPY --from=go-build /home/build/miriconf-backend /usr/local/bin
 
 EXPOSE 8080
 
-ENV GIN_MODE=release
-
 CMD ["miriconf-backend"]

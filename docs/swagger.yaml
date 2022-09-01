@@ -10,17 +10,32 @@ definitions:
         type: string
     type: object
   model.Team:
+    description: Team information
     properties:
+      createdat:
+        description: Creation timestamp
+        example: 08-23-2022
+        format: string
+        type: string
+      department:
+        description: Parent department of team
+        example: cybersecurity
+        format: string
+        type: string
       id:
+        description: ID of team
         example: 1
         format: int64
         type: integer
       name:
-        example: team name
+        description: Name of team
+        example: cyber operations
+        format: string
         type: string
-      uuid:
-        example: 550e8400-e29b-41d4-a716-446655440000
-        format: uuid
+      tags:
+        description: Tags assigned to the team using the UI
+        example: security
+        format: string
         type: string
     type: object
 host: localhost:8080

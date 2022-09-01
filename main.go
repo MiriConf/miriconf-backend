@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
 
 	"github.com/MiriConf/miriconf-backend/controller"
 
@@ -25,8 +28,18 @@ import (
 // @BasePath  /api/v1
 
 func main() {
-	fmt.Println("miriconf-backend is running...")
-	
+	count := 5
+	for count > 0 {
+		fmt.Printf("miriconf-backend is starting in %v...\n", count)
+		time.Sleep(time.Second)
+		count--
+	}
+
+	mongoURI := os.Getenv("MONGO_URI")
+	if mongoURI == "" {
+		log.Fatal("mongo URI is not specified, set with MONGO_URI environment variable")
+	}
+
 	mainRouter := gin.Default()
 	mainController := controller.NewController()
 
