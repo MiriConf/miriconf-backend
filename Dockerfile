@@ -1,7 +1,21 @@
-FROM alpine:latest
+ARG TARGETARCH
 
-COPY ./miriconf-backend .
+FROM --platform=$TARGETPLATFORM golang:latest AS go-build
+
+RUN mkdir /home/build
+
+COPY . /home/build
+
+WORKDIR /home/build
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH go build -v ./
+
+FROM --platform=$TARGETPLATFORM alpine:latest
+
+COPY --from=go-build /home/build/miriconf-backend /usr/local/bin
 
 EXPOSE 8080
 
-CMD ["./miriconf-backend"]
+ENV GIN_MODE=release
+
+CMD ["miriconf-backend"]
