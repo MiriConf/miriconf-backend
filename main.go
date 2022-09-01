@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/MiriConf/miriconf-backend/controller"
 
 	_ "github.com/MiriConf/miriconf-backend/docs"
@@ -23,8 +25,9 @@ import (
 // @BasePath  /api/v1
 
 func main() {
+	fmt.Println("miriconf-backend is running...")
+	
 	mainRouter := gin.Default()
-
 	mainController := controller.NewController()
 
 	v1 := mainRouter.Group("/api/v1")
