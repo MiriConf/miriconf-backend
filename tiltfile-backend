@@ -1,7 +1,4 @@
-load('ext://git_resource', 'git_checkout')
-git_checkout('git@github.com:MiriConf/miriconf-frontend.git#main', '../miriconf-frontend')
-
-include('../miriconf-frontend/Tiltfile')
+include('../miriconf-frontend/tiltfile-ref')
 
 docker_build('miriconf-backend', '.', dockerfile='dev-deploy/Dockerfile')
 k8s_yaml('dev-deploy/deployment.yaml')
