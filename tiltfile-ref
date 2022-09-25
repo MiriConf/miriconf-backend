@@ -1,6 +1,6 @@
 #include('../miriconf-frontend/Tiltfile')
 
-docker_build('miriconf-backend', '.', dockerfile='dev-deploy/Dockerfile')
+docker_build('miriconf-backend', '.', dockerfile='./Dockerfile')
 k8s_yaml('dev-deploy/deployment.yaml')
 k8s_resource('miriconf-backend', port_forwards=8081)
 
