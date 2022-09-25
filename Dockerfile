@@ -4,7 +4,7 @@ FROM --platform=$TARGETPLATFORM golang:latest AS go-build
 
 RUN mkdir /home/build
 
-COPY . /home/build
+COPY ./src /home/build
 
 WORKDIR /home/build
 
