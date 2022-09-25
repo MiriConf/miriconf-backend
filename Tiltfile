@@ -1,5 +1,5 @@
 load('ext://git_resource', 'git_checkout')
-git_checkout('git@github.com:MiriConf/miriconf-frontend.git#main', '../miriconf-frontend', unsafe_mode=True)
+git_checkout('git@github.com:MiriConf/miriconf-frontend.git#main', '../miriconf-frontend')
 
 include('../miriconf-frontend/Tiltfile')
 
