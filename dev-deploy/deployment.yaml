@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: miriconf-backend
+  namespace: default
   labels:
     app: miriconf-backend
 spec:
@@ -17,5 +18,8 @@ spec:
       containers:
       - name: miriconf-backend
         image: miriconf-backend
+        env:
+        - name: MONGO_URI
+          value: "http://mongodb.default.svc.cluster.local.:27017"
       ports:
         - containerPort: 8081

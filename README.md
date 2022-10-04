@@ -41,4 +41,4 @@ scoop install tilt helm
 kubectl config use-context docker-desktop
 ```
 
-Once dependencies are met, open a Powershell terminal in the miriconf-backend folder and run `tilt up -f tiltfile-backend` then press space to open tilt in your browser. You should now have a local instance of miriconf running at http://localhost:8080 as well as a local instance of the miriconf backend api running at http://localhost:8081.
+Once dependencies are met, open a Powershell terminal in the miriconf-backend folder and run `tilt up -f tiltfile-backend` then press space to open tilt in your browser. You should now have a local instance of miriconf running at http://localhost:8080 as well as a local instance of the miriconf backend api running at http://localhost:8081/api/v1 and the backend swagger docs at http://localhost:8081/swagger/index.html.

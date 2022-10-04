@@ -24,7 +24,7 @@ import (
 // @license.name    GPL3
 // @license.url     https://www.gnu.org/licenses/gpl-3.0.en.html
 
-// @host      localhost:8080
+// @host      localhost:8081
 // @BasePath  /api/v1
 
 func main() {
@@ -40,6 +40,8 @@ func main() {
 		log.Fatal("mongo URI is not specified, set with MONGO_URI environment variable")
 	}
 
+	fmt.Println("docs accesible at /swagger/index.html")
+
 	mainRouter := gin.Default()
 	mainController := controller.NewController()
 
@@ -48,7 +50,7 @@ func main() {
 		teams := v1.Group("/teams")
 		{
 			// root teams
-			teams.GET("", mainController.ListTeams)
+			teams.GET("/all", mainController.ListTeams)
 			//teams.POST("", mainController.AddTeam)
 			//teams.GET(":id", mainController.ShowTeam)
 			//teams.PATCH(":id", mainController.UpdateTeam)
