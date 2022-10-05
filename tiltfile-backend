@@ -15,4 +15,4 @@ helm_remote('mongodb',
 )
 k8s_resource('mongodb', port_forwards=27017)
 
-local_resource('load-dummy-data', cmd='docker run --rm --network="host" -v "$PWD":/home mongo mongorestore --host=localhost --port=27017 --username=root --password=localdev /home/dev-deploy/dummy-data/', resource_deps=['mongodb'])
+local_resource('load-dummy-data', cmd='docker run --rm --network="host" -v ${PWD}:/home mongo mongorestore --host=localhost --port=27017 --username=root --password=localdev /home/dev-deploy/dummy-data/', resource_deps=['mongodb'])
