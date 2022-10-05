@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dummy-data-load
+  namespace: default
+spec:
+  containers:
+  - image: dummy-data-job
+    name: dummy-data-load
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
