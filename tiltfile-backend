@@ -4,9 +4,15 @@ docker_build('miriconf-backend', '.', dockerfile='./Dockerfile')
 k8s_yaml('dev-deploy/deployment.yaml')
 k8s_resource('miriconf-backend', port_forwards=8081)
 
+k8s_yaml('dev-deploy/mongo-express.yaml')
+k8s_resource('mongo-express', port_forwards=8083)
+
 load('ext://helm_remote', 'helm_remote')
 helm_remote('mongodb',
     repo_name='bitnami',
     repo_url='https://charts.bitnami.com/bitnami',
     values=["./dev-deploy/mongo-values.yaml"]
 )
+k8s_resource('mongodb', port_forwards=27017)
+
+local_resource('load-dummy-data', cmd='docker run --rm --network="host" -v "$PWD":/home mongo mongorestore --host=localhost --port=27017 --username=root --password=localdev /home/dev-deploy/dummy-data/', resource_deps=['mongodb'])

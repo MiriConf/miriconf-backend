@@ -16,7 +16,7 @@ import (
 // @Failure      400  {object}  httputil.HTTPError
 // @Failure      404  {object}  httputil.HTTPError
 // @Failure      500  {object}  httputil.HTTPError
-// @Router       /teams [get]
+// @Router       /teams/all [get]
 func (c *Controller) ListTeams(ctx *gin.Context) {
 	teams := model.TeamsAll()
 	ctx.JSON(http.StatusOK, teams)
