@@ -57,38 +57,3 @@ func main() {
 	// Start server
 	log.Fatal(http.ListenAndServe(":8081", r))
 }
-
-//func (c *Controller) ListTeams(ctx *gin.Context) {
-//	var uri string
-//	if uri = os.Getenv("MONGO_URI"); uri == "" {
-//		log.Fatal("You must set your 'MONGODB_URI' environmental variable")
-//	}
-//
-//	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
-//	if err != nil {
-//		panic(err)
-//	}
-//	defer func() {
-//		if err = client.Disconnect(context.TODO()); err != nil {
-//			panic(err)
-//		}
-//	}()
-//
-//	coll := client.Database("miriconf").Collection("teams")
-//
-//	filter := bson.D{{"id", bson.D{{"$lte", 500}}}}
-//	cursor, err := coll.Find(context.TODO(), filter)
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	var results []bson.D
-//	if err = cursor.All(context.TODO(), &results); err != nil {
-//		panic(err)
-//	}
-//
-//	var testTeam Team
-//	err = bson.Unmarshal(results, &testTeam)
-//
-//	ctx.JSON(http.StatusOK, results)
-//}
