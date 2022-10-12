@@ -1,42 +1,21 @@
 basePath: /api/v1
 definitions:
-  httputil.HTTPError:
+  teams.Team:
     properties:
-      code:
-        example: 400
-        type: integer
-      message:
-        example: status bad request
+      _id:
         type: string
-    type: object
-  model.Team:
-    description: Team information
-    properties:
       createdat:
-        description: Creation timestamp
-        example: 08-23-2022
-        format: string
         type: string
       department:
-        description: Parent department of team
-        example: cybersecurity
-        format: string
         type: string
       id:
-        description: ID of team
-        example: 1
-        format: int64
         type: integer
       name:
-        description: Name of team
-        example: cyber operations
-        format: string
         type: string
       tags:
-        description: Tags assigned to the team using the UI
-        example: security
-        format: string
-        type: string
+        additionalProperties:
+          type: string
+        type: object
     type: object
 host: localhost:8081
 info:
@@ -51,9 +30,9 @@ info:
   title: MiriConf Backend API
   version: "1.0"
 paths:
-  /teams:
+  /teams/list:
     get:
-      description: get teams
+      description: list all teams
       produces:
       - application/json
       responses:
@@ -61,21 +40,21 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Team'
+              $ref: '#/definitions/teams.Team'
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/httputil.HTTPError'
+            type: string
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/httputil.HTTPError'
+            type: string
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/httputil.HTTPError'
-      summary: List teams
+            type: string
+      summary: List all teams
       tags:
       - teams
 swagger: "2.0"

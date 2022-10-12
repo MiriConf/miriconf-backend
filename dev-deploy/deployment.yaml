@@ -20,6 +20,6 @@ spec:
         image: miriconf-backend
         env:
         - name: MONGO_URI
-          value: "http://mongodb-svc.default.svc.cluster.local.:27017"
+          value: "mongodb+srv://admin:localdev@mongodb-svc.default.svc.cluster.local/?replicaSet=mongodb&ssl=false"
       ports:
         - containerPort: 8081

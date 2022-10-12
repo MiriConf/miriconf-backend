@@ -1,6 +1,6 @@
 # miriconf-backend
 
-This is the backend api for miriconf installations, it is using the [Golang Gin Web Framework](https://gin-gonic.com) to assemble the api. This repo will automatically build and test the go binary, package it in a container, and push the container to [Github Packages](https://github.com/orgs/MiriConf/packages?repo_name=miriconf-backend). For our API documentation we are using the [swaggo](https://github.com/swaggo) Go libraries to generate and host our API documentation. When running this container go to [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html) to view our API docs.
+This is the backend api for miriconf installations, it is using the [Gorilla Mux](https://github.com/gorilla/mux) package to manage routing for the api. This repo will automatically build and test the go binary, package it in a container, and push the container to [Github Packages](https://github.com/orgs/MiriConf/packages?repo_name=miriconf-backend). For our API documentation we are using the [swaggo](https://github.com/swaggo) Go libraries to generate and host our API documentation. When running this container go to [http://localhost:8080/docs/](http://localhost:8080/docs/) to view our API docs.
 
 ## Running a local dev environment with Tilt on Windows
 
@@ -49,4 +49,4 @@ Once dependencies are met, open a Powershell terminal in the miriconf-backend fo
  
 - mongo-db admin panel running at http://localhost:8083
  
-- swagger api docs at http://localhost:8081/swagger/index.html.
+- swagger api docs at http://localhost:8081/docs/.
