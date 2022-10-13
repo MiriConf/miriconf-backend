@@ -4,12 +4,7 @@ docker_build('miriconf-backend', '.', dockerfile='./Dockerfile')
 k8s_yaml('dev-deploy/deployment.yaml')
 k8s_resource('miriconf-backend', port_forwards=8081)
 
-load('ext://helm_remote', 'helm_remote')
-helm_remote('community-operator',
-    repo_name='mongodb',
-    repo_url='https://mongodb.github.io/helm-charts'
-)
-k8s_yaml('dev-deploy/local-mongo-cluster.yaml')
+k8s_yaml('dev-deploy/mongo-local.yaml')
 
 k8s_yaml('dev-deploy/mongo-express.yaml')
 k8s_resource('mongo-express', port_forwards='8083:8081')
