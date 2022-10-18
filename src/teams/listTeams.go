@@ -3,10 +3,10 @@ package teams
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 
+	"github.com/MiriConf/miriconf-backend/middlewares"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -47,14 +47,9 @@ func ListTeams(w http.ResponseWriter, r *http.Request) {
 	if err = cursor.All(context.TODO(), &results); err != nil {
 		panic(err)
 	}
-	for _, result := range results {
-		output, err := json.MarshalIndent(result, "", "    ")
-		if err != nil {
-			panic(err)
-		}
-		if output != nil {
-			fmt.Println("successful call on /api/v1/teams/list")
-		}
+
+	if results != nil {
+		middlewares.CallLog(r)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
