@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/MiriConf/miriconf-backend/teams"
 
@@ -27,12 +26,7 @@ import (
 // @BasePath  /api/v1
 
 func main() {
-	count := 5
-	for count > 0 {
-		fmt.Printf("miriconf-backend is starting in %v...\n", count)
-		time.Sleep(time.Second)
-		count--
-	}
+	fmt.Println("miriconf-backend ready for requests...")
 
 	mongoURI := os.Getenv("MONGO_URI")
 	if mongoURI == "" {
