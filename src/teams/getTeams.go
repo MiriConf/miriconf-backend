@@ -3,11 +3,11 @@ package teams
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
-	"github.com/MiriConf/miriconf-backend/middlewares"
+	"github.com/MiriConf/miriconf-backend/helpers"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -27,8 +27,9 @@ import (
 func GetTeams(w http.ResponseWriter, r *http.Request) {
 	mongoURI := os.Getenv("MONGO_URI")
 
-	reqParams := mux.Vars(r)
-	reqID := reqParams["id"]
+	requestParams := mux.Vars(r)
+	requestIDRaw := requestParams["id"]
+	reqID, _ := strconv.ParseInt(requestIDRaw, 10, 64)
 
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoURI))
 	if err != nil {
@@ -40,49 +41,27 @@ func GetTeams(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-
 	coll := client.Database("miriconf").Collection("teams")
-	
+
 	var result bson.M
 	err = coll.FindOne(context.TODO(), bson.D{{"id", reqID}}).Decode(&result)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			fmt.Println("no docs")
-			// This error means your query did not match any documents.
+
+			testerr := `{"error":"no teams matching id requested"}`
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(testerr)
+
+			helpers.EndpointError("no teams matching id", r)
 			return
 		}
 		panic(err)
 	}
-	// end findOne
 
-	output, err := json.MarshalIndent(result, "", "    ")
-	if err != nil {
-		panic(err)
+	if result != nil {
+		helpers.SuccessLog(r)
 	}
 
-	if output != nil {
-		middlewares.CallLog(r)
-	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(output)
-
-
-
-
-	//var results bson.M
-	//err = coll.FindOne(context.TODO(), bson.D{{"id", reqID}}).Decode(&results)
-	//if err != nil {
-	//	if err == mongo.ErrNoDocuments {
-	//		// This error means your query did not match any documents.
-	//		return
-	//	}
-	//	panic(err)
-	//}
-	////debug
-	//fmt.Println(results)
-	//if results != nil {
-	//	middlewares.CallLog(r)
-	//}
-	//w.Header().Set("Content-Type", "application/json")
-	//json.NewEncoder(w).Encode(results)
+	json.NewEncoder(w).Encode(result)
 }

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/MiriConf/miriconf-backend/middlewares"
+	"github.com/MiriConf/miriconf-backend/helpers"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -49,7 +49,7 @@ func ListTeams(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if results != nil {
-		middlewares.CallLog(r)
+		helpers.SuccessLog(r)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
