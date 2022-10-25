@@ -18,9 +18,6 @@ import (
 // @Tags         teams
 // @Produce      json
 // @Success      200  {array}   teams.Team
-// @Failure      400  {object}  string
-// @Failure      404  {object}  string
-// @Failure      500  {object}  string
 // @Router       /teams/list [get]
 func ListTeams(w http.ResponseWriter, r *http.Request) {
 	mongoURI := os.Getenv("MONGO_URI")
@@ -36,22 +33,18 @@ func ListTeams(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	coll := client.Database("miriconf").Collection("teams")
-	filter := bson.D{{"id", bson.D{{"$lte", 500}}}}
 
-	cursor, err := coll.Find(context.TODO(), filter)
+	cursor, err := coll.Find(context.TODO(), bson.D{}, options.Find().SetLimit(10))
 	if err != nil {
 		panic(err)
 	}
 
-	var results []bson.M
-	if err = cursor.All(context.TODO(), &results); err != nil {
+	var result []bson.M
+	if err = cursor.All(context.TODO(), &result); err != nil {
 		panic(err)
 	}
 
-	if results != nil {
-		helpers.SuccessLog(r)
-	}
-
+	helpers.SuccessLog(r)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(results)
+	json.NewEncoder(w).Encode(result)
 }
