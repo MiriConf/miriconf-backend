@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/MiriConf/miriconf-backend/teams"
+	"github.com/MiriConf/miriconf-backend/users"
 
 	_ "github.com/MiriConf/miriconf-backend/docs"
 	"github.com/gorilla/mux"
@@ -45,6 +46,8 @@ func main() {
 	r.HandleFunc("/api/v1/teams", teams.CreateTeams).Methods("POST")
 	r.HandleFunc("/api/v1/teams/{id}", teams.EditTeams).Methods("PUT")
 	r.HandleFunc("/api/v1/teams/{id}", teams.DeleteTeams).Methods("DELETE")
+	// Users
+	r.HandleFunc("/api/v1/users", users.CreateUsers).Methods("POST")
 
 	r.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
 
