@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/MiriConf/miriconf-backend/helpers"
+	jwt "github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -28,6 +29,27 @@ import (
 // @Router       /teams [post]
 func CreateTeams(w http.ResponseWriter, r *http.Request) {
 	mongoURI := os.Getenv("MONGO_URI")
+
+	headerToken := r.Header.Get("Authorization")
+	if headerToken == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	token, err := helpers.ValidateToken(headerToken)
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if !token.Valid {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
