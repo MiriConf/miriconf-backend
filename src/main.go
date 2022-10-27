@@ -34,6 +34,11 @@ func main() {
 		log.Fatal("mongo URI is not specified, set with MONGO_URI environment variable")
 	}
 
+	jwtKey := []byte(os.Getenv("JWT_KEY"))
+	if len(jwtKey) == 0 {
+		log.Fatal("JWT key is not specified, set with JWT_KEY environment variable")
+	}
+
 	fmt.Println("docs accesible at localhost:8081/docs/")
 
 	r := mux.NewRouter()
@@ -47,6 +52,7 @@ func main() {
 	r.HandleFunc("/api/v1/teams/{id}", teams.EditTeams).Methods("PUT")
 	r.HandleFunc("/api/v1/teams/{id}", teams.DeleteTeams).Methods("DELETE")
 	// Users
+	r.HandleFunc("/api/v1/login", users.Login).Methods("POST")
 	r.HandleFunc("/api/v1/users", users.CreateUsers).Methods("POST")
 
 	r.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
