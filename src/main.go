@@ -53,7 +53,11 @@ func main() {
 	r.HandleFunc("/api/v1/teams/{id}", teams.DeleteTeams).Methods("DELETE")
 	// Users
 	r.HandleFunc("/api/v1/login", users.Login).Methods("POST")
+	r.HandleFunc("/api/v1/users/list", users.ListUsers).Methods("GET")
+	r.HandleFunc("/api/v1/users/get/{id}", users.GetUsers).Methods("GET")
 	r.HandleFunc("/api/v1/users", users.CreateUsers).Methods("POST")
+	r.HandleFunc("/api/v1/users/{id}", users.EditUsers).Methods("PUT")
+	r.HandleFunc("/api/v1/users/{id}", users.DeleteUsers).Methods("DELETE")
 
 	r.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
 

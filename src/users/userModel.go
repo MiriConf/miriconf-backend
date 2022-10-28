@@ -12,3 +12,10 @@ type LoginData struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+
+type GetUser struct {
+	Username  string `json:"username"`
+	Fullname  string `json:"fullname"`
+	Email     string `json:"email"`
+	CreatedAt string `json:"createdat"`
+}
