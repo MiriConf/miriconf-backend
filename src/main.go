@@ -10,6 +10,7 @@ import (
 	"github.com/MiriConf/miriconf-backend/users"
 
 	_ "github.com/MiriConf/miriconf-backend/docs"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -62,5 +63,5 @@ func main() {
 	r.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
 
 	// Start server
-	log.Fatal(http.ListenAndServe(":8081", r))
+	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(r)))
 }
