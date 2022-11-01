@@ -1,0 +1,19 @@
+secrets:
+  name: minio1-env-configuration
+  accessKey: admin
+  secretKey: localdev
+tenant:
+  name: minio1
+  pools:
+    - servers: 1
+      name: pool-0
+      volumesPerServer: 1
+      size: 5Gi
+      storageClassName: local-path
+  prometheus:
+    storageClassName: local-path
+  log:
+    db:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
