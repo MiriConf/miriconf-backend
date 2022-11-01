@@ -2,12 +2,31 @@ include('../miriconf-frontend/tiltfile-ref')
 
 docker_build('miriconf-backend', '.', dockerfile='./Dockerfile')
 k8s_yaml('dev-deploy/deployment.yaml')
-k8s_resource('miriconf-backend', port_forwards=8081)
+k8s_resource('miriconf-backend', port_forwards=8081, labels=["Backend"])
 
 k8s_yaml('dev-deploy/mongo-local.yaml')
 
 k8s_yaml('dev-deploy/mongo-express.yaml')
-k8s_resource('mongo-express', port_forwards='8083:8081')
+k8s_resource('mongo-express', port_forwards='8083:8081', labels=["MongoDB"])
+
+k8s_resource('mongodb', labels=["MongoDB"])
 
 docker_build('dummy-data-job', '.', dockerfile='./dev-deploy/dummy-data.Dockerfile')
 k8s_yaml('dev-deploy/dummy-data-job.yaml')
+k8s_resource('dummy-data-load', labels=["MongoDB"])
+
+load('ext://helm_remote', 'helm_remote')
+helm_remote('operator',
+    repo_name='minio',
+    repo_url='https://operator.min.io/',
+    values=["./dev-deploy/minio-operator-values.yaml"]
+)
+
+load('ext://helm_remote', 'helm_remote')
+helm_remote('tenant',
+    repo_name='minio',
+    repo_url='https://operator.min.io/',
+    values=["./dev-deploy/minio-tenant-values.yaml"]
+)
+k8s_resource('console', port_forwards='9090:9090', labels=["Minio"])
+k8s_resource('minio-operator', labels=["Minio"])
