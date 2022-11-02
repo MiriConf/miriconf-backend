@@ -43,6 +43,7 @@ func main() {
 	fmt.Println("docs accesible at localhost:8081/docs/")
 
 	r := mux.NewRouter()
+	r.Host("backend-svc")
 
 	// API Endpoints
 
@@ -63,5 +64,5 @@ func main() {
 	r.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
 
 	// Start server
-	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(r)))
+	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(r)))
 }
