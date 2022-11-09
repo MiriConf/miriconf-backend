@@ -12,7 +12,7 @@ FROM --platform=$TARGETPLATFORM golang:latest AS go-build
 
 RUN mkdir /home/build
 
-COPY ./pkgs-src /home/build
+COPY . /home/build
 
 WORKDIR /home/build
 
@@ -24,9 +24,9 @@ COPY --from=repo-fetch /home/nixpkgs-master/pkgs /home/pkgs
 
 COPY --from=go-build /home/build/pkgs-job /home/pkgs-job
 
-COPY ./pkgs-src/applications.bson /home/data/applications.bson
+COPY ./applications.bson /home/data/applications.bson
 
-COPY ./pkgs-src/applications.metadata.json /home/data/applications.metadata.json
+COPY ./applications.metadata.json /home/data/applications.metadata.json
 
 WORKDIR /home/pkgs
 
