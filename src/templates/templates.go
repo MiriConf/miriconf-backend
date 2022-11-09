@@ -21,8 +21,8 @@ func Templates(w http.ResponseWriter, r *http.Request) {
 	ParseTemplate()
 
 	endpoint := "minio-svc:9000"
-	accessKeyID := "TgcVtoIaKttPFqUC"
-	secretAccessKey := "LE6jWe3EGJLrv4apKDZkUZu3W7Eob37f"
+	accessKeyID := "nil"
+	secretAccessKey := "nil"
 	useSSL := false
 
 	// Initialize minio client object.
@@ -69,7 +69,7 @@ func Templates(w http.ResponseWriter, r *http.Request) {
 
 	helpers.SuccessLog(r)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("aaaaaa")
+	json.NewEncoder(w).Encode("a")
 }
 
 func ParseTemplate() {

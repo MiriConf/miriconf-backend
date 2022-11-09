@@ -1,7 +1,6 @@
-# add back ARG TARGETARCH
+ARG TARGETARCH
 
-# add back --platform=$TARGETPLATFORM
-FROM busybox:latest AS repo-fetch
+FROM --platform=$TARGETPLATFORM busybox:latest AS repo-fetch
 
 WORKDIR /home
 
@@ -9,8 +8,7 @@ RUN wget https://github.com/NixOS/nixpkgs/archive/refs/heads/master.zip
 
 RUN unzip master.zip
 
-# add back --platform=$TARGETPLATFORM
-FROM golang:latest AS go-build
+FROM --platform=$TARGETPLATFORM golang:latest AS go-build
 
 RUN mkdir /home/build
 
@@ -20,8 +18,7 @@ WORKDIR /home/build
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH go build -v ./
 
-# add back --platform=$TARGETPLATFORM
-FROM nixos/nix:master
+FROM --platform=$TARGETPLATFORM nixos/nix:master
 
 COPY --from=repo-fetch /home/nixpkgs-master/pkgs /home/pkgs
 
