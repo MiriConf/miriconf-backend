@@ -14,14 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// GetTeams godoc
-// @Summary      Display data for a single team
-// @Description  Display data for a single team
-// @Tags         teams
-// @Produce      json
-// @Success      200  {array}   teams.Team
-// @Failure      200  {array}   helpers.Error
-// @Router       /teams/get/{_id} [get]
 func GetTeams(w http.ResponseWriter, r *http.Request) {
 	mongoURI := os.Getenv("MONGO_URI")
 	w.Header().Set("Content-Type", "application/json")

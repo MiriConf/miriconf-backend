@@ -13,13 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// ListUsers godoc
-// @Summary      List all users
-// @Description  list all users
-// @Tags         users
-// @Produce      json
-// @Success      200  {array}   users.Users
-// @Router       /users/list [get]
 func ListUsers(w http.ResponseWriter, r *http.Request) {
 	mongoURI := os.Getenv("MONGO_URI")
 

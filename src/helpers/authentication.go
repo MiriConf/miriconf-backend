@@ -10,6 +10,7 @@ import (
 
 type Token struct {
 	Username string `json:"username"`
+	Hostname string `json:"hostname"`
 	jwt.StandardClaims
 }
 

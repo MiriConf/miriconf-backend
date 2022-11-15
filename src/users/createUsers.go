@@ -16,16 +16,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// CreateUsers godoc
-// @Summary      Create a single user
-// @Description  Create a single user
-// @Tags         users
-// @Produce      json
-// @Success      200  string   successRes
-// @Failure      400  {object}  string
-// @Failure      404  {object}  string
-// @Failure      500  {object}  string
-// @Router       /users [post]
 func CreateUsers(w http.ResponseWriter, r *http.Request) {
 	mongoURI := os.Getenv("MONGO_URI")
 
