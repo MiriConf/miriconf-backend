@@ -16,16 +16,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// Login godoc
-// @Summary      Log into the app
-// @Description  Log into the app
-// @Tags         users
-// @Produce      json
-// @Success      200  string   successRes
-// @Failure      400  {object}  string
-// @Failure      404  {object}  string
-// @Failure      500  {object}  string
-// @Router       /login [post]
 func Login(w http.ResponseWriter, r *http.Request) {
 	mongoURI := os.Getenv("MONGO_URI")
 	jwtKey := []byte(os.Getenv("JWT_KEY"))
@@ -76,6 +66,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	var tokenClaim = helpers.Token{
 		Username: postLogin.Username,
+		Hostname: os.Getenv("MIRICONF_HOSTNAME"),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(2 * time.Hour).Unix(),
 		},

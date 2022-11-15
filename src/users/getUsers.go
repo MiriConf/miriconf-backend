@@ -14,14 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// GetUsers godoc
-// @Summary      Display data for a single user
-// @Description  Display data for a single user
-// @Tags         teams
-// @Produce      json
-// @Success      200  {array}   users.User
-// @Failure      200  {array}   helpers.Error
-// @Router       /user/get/{_id} [get]
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	mongoURI := os.Getenv("MONGO_URI")
 	w.Header().Set("Content-Type", "application/json")

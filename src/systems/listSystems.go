@@ -1,4 +1,4 @@
-package teams
+package systems
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func ListTeams(w http.ResponseWriter, r *http.Request) {
+func ListSystems(w http.ResponseWriter, r *http.Request) {
 	mongoURI := os.Getenv("MONGO_URI")
 
 	headerToken := r.Header.Get("Authorization")
@@ -47,7 +47,7 @@ func ListTeams(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	coll := client.Database("miriconf").Collection("teams")
+	coll := client.Database("miriconf").Collection("systems")
 
 	cursor, err := coll.Find(context.TODO(), bson.D{}, options.Find().SetLimit(10))
 	if err != nil {

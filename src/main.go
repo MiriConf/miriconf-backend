@@ -6,30 +6,20 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/MiriConf/miriconf-backend/systems"
 	"github.com/MiriConf/miriconf-backend/teams"
 	"github.com/MiriConf/miriconf-backend/templates"
 	"github.com/MiriConf/miriconf-backend/users"
 
-	_ "github.com/MiriConf/miriconf-backend/docs"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// @title           MiriConf Backend API
-// @version         1.0
-// @description     The backend API for MiriConf.
-// @contact.name    MiriConf
-// @contact.url     https://github.com/MiriConf/miriconf-backend
-// @contact.email   bolmidgk@mail.uc.edu
-// @license.name    GPL3
-// @license.url     https://www.gnu.org/licenses/gpl-3.0.en.html
-
-// @host      localhost:8081
-// @BasePath  /api/v1
-
 func main() {
-	fmt.Println("miriconf-backend ready for requests...")
+	hostName := os.Getenv("MIRICONF_HOSTNAME")
+	if hostName == "" {
+		log.Fatal("miriconf hostname is not specified, set with MIRICONF_HOSTNAME environment variable")
+	}
 
 	mongoURI := os.Getenv("MONGO_URI")
 	if mongoURI == "" {
@@ -41,7 +31,7 @@ func main() {
 		log.Fatal("JWT key is not specified, set with JWT_KEY environment variable")
 	}
 
-	fmt.Println("docs accesible at localhost:8081/docs/")
+	fmt.Println("miriconf-backend ready for requests...")
 
 	r := mux.NewRouter()
 	r.Host("backend-svc")
@@ -61,11 +51,16 @@ func main() {
 	r.HandleFunc("/api/v1/users", users.CreateUsers).Methods("POST")
 	r.HandleFunc("/api/v1/users/{id}", users.EditUsers).Methods("PUT")
 	r.HandleFunc("/api/v1/users/{id}", users.DeleteUsers).Methods("DELETE")
+	// Systems
+	r.HandleFunc("/api/v1/systems/list", systems.ListSystems).Methods("GET")
+	r.HandleFunc("/api/v1/systems/ping", systems.Ping).Methods("GET")
+	r.HandleFunc("/api/v1/systems/get/{id}", systems.GetSystems).Methods("GET")
+	r.HandleFunc("/api/v1/systems/create", systems.CreateSystems).Methods("POST")
+	r.HandleFunc("/api/v1/systems/{id}", systems.EditSystems).Methods("PUT")
+	r.HandleFunc("/api/v1/systems/{id}", systems.DeleteSystems).Methods("DELETE")
 	// Templates
 	r.HandleFunc("/api/v1/templates", templates.Templates).Methods("GET")
 
-	r.PathPrefix("/docs/").Handler(httpSwagger.WrapHandler)
-
 	// Start server
-	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(r)))
+	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Accept", "Accept-Encoding"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(r)))
 }

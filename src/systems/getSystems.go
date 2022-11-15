@@ -1,8 +1,9 @@
-package teams
+package systems
 
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 
@@ -13,8 +14,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func ListTeams(w http.ResponseWriter, r *http.Request) {
+func GetSystems(w http.ResponseWriter, r *http.Request) {
 	mongoURI := os.Getenv("MONGO_URI")
+	w.Header().Set("Content-Type", "application/json")
 
 	headerToken := r.Header.Get("Authorization")
 	if headerToken == "" {
@@ -37,6 +39,11 @@ func ListTeams(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	status, systemID := helpers.GetRequestID("system", r, w)
+	if status == 1 {
+		return
+	}
+
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		panic(err)
@@ -47,19 +54,23 @@ func ListTeams(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	coll := client.Database("miriconf").Collection("teams")
+	coll := client.Database("miriconf").Collection("systems")
 
-	cursor, err := coll.Find(context.TODO(), bson.D{}, options.Find().SetLimit(10))
+	var result bson.M
+	err = coll.FindOne(context.TODO(), bson.D{{Key: "_id", Value: systemID}}).Decode(&result)
 	if err != nil {
-		panic(err)
-	}
-
-	var result []bson.M
-	if err = cursor.All(context.TODO(), &result); err != nil {
-		panic(err)
+		if err == mongo.ErrNoDocuments {
+			if err != nil {
+				error := helpers.ErrorMsg("no system matching id requested")
+				w.Write(error)
+				helpers.EndpointError("no system matching id requested", r)
+				return
+			}
+		}
+		log.Fatal(err)
 	}
 
 	helpers.SuccessLog(r)
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result)
+	return
 }

@@ -1,4 +1,4 @@
-package teams
+package systems
 
 import (
 	"context"
@@ -17,7 +17,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func CreateTeams(w http.ResponseWriter, r *http.Request) {
+func EditSystems(w http.ResponseWriter, r *http.Request) {
 	mongoURI := os.Getenv("MONGO_URI")
 
 	headerToken := r.Header.Get("Authorization")
@@ -41,6 +41,11 @@ func CreateTeams(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	status, systemID := helpers.GetRequestID("system", r, w)
+	if status == 1 {
+		return
+	}
+
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		error := helpers.ErrorMsg("error reading request body")
@@ -49,20 +54,20 @@ func CreateTeams(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var postTeam Team
-	json.Unmarshal(reqBody, &postTeam)
+	var putSystem System
+	json.Unmarshal(reqBody, &putSystem)
 
-	if strings.TrimSpace(postTeam.Name) == "" {
-		error := helpers.ErrorMsg("no team name in request")
+	if strings.TrimSpace(putSystem.SystemName) == "" {
+		error := helpers.ErrorMsg("no system name in request")
 		w.Write(error)
-		helpers.EndpointError("no team name in request", r)
+		helpers.EndpointError("no system name in request", r)
 		return
 	}
 
-	if strings.TrimSpace(postTeam.Department) == "" {
-		error := helpers.ErrorMsg("no department name in request")
+	if len(putSystem.Users) <= 0 {
+		error := helpers.ErrorMsg("no users in request")
 		w.Write(error)
-		helpers.EndpointError("no department name in request", r)
+		helpers.EndpointError("no users in request", r)
 		return
 	}
 
@@ -76,28 +81,30 @@ func CreateTeams(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	coll := client.Database("miriconf").Collection("teams")
+	coll := client.Database("miriconf").Collection("systems")
 
 	var nameCheck bson.M
-	err = coll.FindOne(context.TODO(), bson.D{{Key: "name", Value: postTeam.Name}}).Decode(&nameCheck)
+	err = coll.FindOne(context.TODO(), bson.D{{Key: "systemname", Value: putSystem.SystemName}}).Decode(&nameCheck)
 	if err != mongo.ErrNoDocuments {
-		error := helpers.ErrorMsg("team with this name already exists")
+		error := helpers.ErrorMsg("system with this name already exists")
 		w.Write(error)
-		helpers.EndpointError("team with this name already exists", r)
+		helpers.EndpointError("system with this name already exists", r)
 		return
 	}
 
 	createdAt := time.Now()
+	lastSeen := time.Now().Unix()
 
-	doc := bson.D{{Key: "name", Value: strings.TrimSpace(postTeam.Name)}, {Key: "department", Value: strings.TrimSpace(postTeam.Department)}, {Key: "createdat", Value: createdAt.Format("01-02-2006 15:04:05")}}
+	doc := bson.D{{"$set", bson.D{{Key: "systemname", Value: strings.TrimSpace(putSystem.SystemName)}, {Key: "users", Value: []string(putSystem.Users)}, {Key: "lastseen", Value: lastSeen}, {Key: "createdat", Value: createdAt.Format("01-02-2006 15:04:05")}}}}
+	filter := bson.D{{Key: "_id", Value: systemID}}
 
-	result, err := coll.InsertOne(context.TODO(), doc)
+	result, err := coll.UpdateOne(context.TODO(), filter, doc)
 	if err != nil {
 		panic(err)
 	}
 
-	documentID := fmt.Sprintf("%v", result.InsertedID)
-	success := helpers.SuccessMsg(postTeam.Name + " successfully added at " + documentID)
+	documentID := fmt.Sprintf("%v", result.UpsertedID)
+	success := helpers.SuccessMsg(putSystem.SystemName + " successfully updated at " + documentID)
 	w.Write(success)
 	helpers.SuccessLog(r)
 	return
