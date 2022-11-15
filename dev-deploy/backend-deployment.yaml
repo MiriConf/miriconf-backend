@@ -20,6 +20,8 @@ spec:
         env:
         - name: MONGO_URI
           value: "mongodb://admin:localdev@mongo-svc.default.svc.cluster.local/admin?ssl=false"
+        - name: MIRICONF_HOSTNAME
+          value: "localhost:8081"
         - name: JWT_KEY
           valueFrom:
             secretKeyRef:
