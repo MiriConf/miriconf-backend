@@ -18,7 +18,3 @@ k8s_resource('mongodb', labels=["MongoDB"])
 docker_build('dummy-data-job', '.', dockerfile='./dev-deploy/dummy-data.Dockerfile')
 k8s_yaml('dev-deploy/dummy-data-job.yaml')
 k8s_resource('dummy-data-load', labels=["MongoDB"])
-
-k8s_yaml('dev-deploy/minio-dev.yaml')
-k8s_resource('minio', port_forwards='9090:9090', labels=["Minio"])
-k8s_resource('minio', port_forwards='9000:9000', labels=["Minio"])
