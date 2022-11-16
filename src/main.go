@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/MiriConf/miriconf-backend/apps"
 	"github.com/MiriConf/miriconf-backend/systems"
 	"github.com/MiriConf/miriconf-backend/teams"
 	"github.com/MiriConf/miriconf-backend/templates"
@@ -59,7 +60,10 @@ func main() {
 	r.HandleFunc("/api/v1/systems/{id}", systems.EditSystems).Methods("PUT")
 	r.HandleFunc("/api/v1/systems/{id}", systems.DeleteSystems).Methods("DELETE")
 	// Templates
-	r.HandleFunc("/api/v1/templates", templates.Templates).Methods("GET")
+	r.HandleFunc("/api/v1/template/build/{id}", templates.BuildTemplate).Methods("GET")
+	r.HandleFunc("/api/v1/template/publish/{id}", templates.PublishTemplate).Methods("GET")
+	// Applications
+	r.HandleFunc("/api/v1/apps/list", apps.ListApps).Methods("GET")
 
 	// Start server
 	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Accept", "Accept-Encoding"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(r)))

@@ -27,6 +27,13 @@ spec:
             secretKeyRef:
               name: miriconf-jwt-key
               key: jwt-key
+        volumeMounts:
+          - mountPath: "/mnt/data"
+            name: backend-storage
+      volumes:
+        - name: backend-storage
+          persistentVolumeClaim:
+            claimName: backend-storage
       ports:
         - containerPort: 8081
 ---
@@ -47,3 +54,14 @@ metadata:
   name: miriconf-jwt-key
 data:
   jwt-key: ZjNyZWJSaExRTllTS1Y4RGpWb0hyaGpJUWdqV0RPWDI3cUNDQ2VOTDE2SHdtQUlCa0tCcG1SS1JPN0Nmc1JDClpMNjRlQXZLVGZPMlliYnZ6cVdJZwo=
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backend-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

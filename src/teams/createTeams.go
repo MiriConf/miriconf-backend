@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/MiriConf/miriconf-backend/helpers"
+	"github.com/go-git/go-git/v5"
+	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	jwt "github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -87,9 +89,62 @@ func CreateTeams(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var repoCheck bson.M
+	err = coll.FindOne(context.TODO(), bson.D{{Key: "source_repo", Value: postTeam.SourceRepo}}).Decode(&repoCheck)
+	if err != mongo.ErrNoDocuments {
+		error := helpers.ErrorMsg("team with this repo already exists")
+		w.Write(error)
+		helpers.EndpointError("team with this repo already exists", r)
+		return
+	}
+
+	directory := "/mnt/data/" + postTeam.Name
+	_, err = os.Stat(directory)
+	if os.IsNotExist(err) {
+		fmt.Printf("%v does not exist yet, attempting to create it now...\n", directory)
+		err := os.Mkdir(directory, 0755)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("created directory at " + directory + " for team " + postTeam.Name)
+	}
+
+	gitClone, err := git.PlainClone(directory, false, &git.CloneOptions{
+		Auth: &githttp.BasicAuth{
+			Username: "null",
+			Password: postTeam.SourcePAT,
+		},
+		URL:               postTeam.SourceRepo + ".git",
+		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+		Progress:          os.Stdout,
+	})
+	if err != nil {
+		fmt.Printf("failed to clone repo at %v... rolling back...\n", postTeam.SourceRepo)
+		err := os.RemoveAll(directory)
+		if err != nil {
+			panic(err)
+		}
+		cloneError := "could not clone repo at " + postTeam.SourceRepo + " with the provided credentials"
+		cloneErr := helpers.ErrorMsg(cloneError)
+		w.Write(cloneErr)
+		return
+	}
+
+	ref, err := gitClone.Head()
+	if err != nil {
+		panic(err)
+	}
+
+	commit, err := gitClone.CommitObject(ref.Hash())
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(commit)
+
 	createdAt := time.Now()
 
-	doc := bson.D{{Key: "name", Value: strings.TrimSpace(postTeam.Name)}, {Key: "department", Value: strings.TrimSpace(postTeam.Department)}, {Key: "createdat", Value: createdAt.Format("01-02-2006 15:04:05")}}
+	doc := bson.D{{Key: "name", Value: strings.TrimSpace(postTeam.Name)}, {Key: "department", Value: strings.TrimSpace(postTeam.Department)}, {Key: "source_repo", Value: strings.TrimSpace(postTeam.SourceRepo)}, {Key: "source_pat", Value: strings.TrimSpace(postTeam.SourcePAT)}, {Key: "createdat", Value: createdAt.Format("01-02-2006 15:04:05")}}
 
 	result, err := coll.InsertOne(context.TODO(), doc)
 	if err != nil {
