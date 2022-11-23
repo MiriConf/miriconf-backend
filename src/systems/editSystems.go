@@ -95,7 +95,7 @@ func EditSystems(w http.ResponseWriter, r *http.Request) {
 	createdAt := time.Now()
 	lastSeen := time.Now().Unix()
 
-	doc := bson.D{{"$set", bson.D{{Key: "systemname", Value: strings.TrimSpace(putSystem.SystemName)}, {Key: "users", Value: []string(putSystem.Users)}, {Key: "lastseen", Value: lastSeen}, {Key: "createdat", Value: createdAt.Format("01-02-2006 15:04:05")}}}}
+	doc := bson.D{{"$set", bson.D{{Key: "systemname", Value: strings.TrimSpace(putSystem.SystemName)}, {Key: "users", Value: []string(putSystem.Users)}, {Key: "team", Value: putSystem.Team}, {Key: "lastseen", Value: lastSeen}, {Key: "createdat", Value: createdAt.Format("01-02-2006 15:04:05")}}}}
 	filter := bson.D{{Key: "_id", Value: systemID}}
 
 	result, err := coll.UpdateOne(context.TODO(), filter, doc)

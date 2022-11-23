@@ -54,7 +54,7 @@ func ListTeams(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	var result []bson.M
+	var result []GetTeam
 	if err = cursor.All(context.TODO(), &result); err != nil {
 		panic(err)
 	}

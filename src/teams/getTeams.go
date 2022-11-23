@@ -56,7 +56,7 @@ func GetTeams(w http.ResponseWriter, r *http.Request) {
 
 	coll := client.Database("miriconf").Collection("teams")
 
-	var result bson.M
+	var result GetTeam
 	err = coll.FindOne(context.TODO(), bson.D{{Key: "_id", Value: teamID}}).Decode(&result)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {

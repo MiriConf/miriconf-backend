@@ -113,13 +113,34 @@ func BuildTemplate(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	filename := filepath.Join(directory, "newfile.txt")
-	err = ioutil.WriteFile(filename, []byte("testing testing testing"), 0644)
+	generated := `users.users.gbolmida = {
+		isNormalUser = true;
+		description = "George";
+		shell = pkgs.fish;
+		extraGroups = [ "networkmanager" "wheel" "docker" ];
+		packages = with pkgs; [
+		  firefox
+		  chromium
+		  unstable.vivaldi
+		  hugo
+		  gimp
+		  vim
+		  wget
+		  nano
+		  tree
+		  htop
+		  vscode
+		  code-server
+		];
+	  };`
+
+	filename := filepath.Join(directory, "generated.nix")
+	err = ioutil.WriteFile(filename, []byte(generated), 0644)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = repoTree.Add("newfile.txt")
+	_, err = repoTree.Add("generated.nix")
 	if err != nil {
 		panic(err)
 	}

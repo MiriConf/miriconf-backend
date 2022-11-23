@@ -68,6 +68,13 @@ func CreateSystems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if strings.TrimSpace(systemInfo.Team) == "" {
+		error := helpers.ErrorMsg("no team in request")
+		w.Write(error)
+		helpers.EndpointError("no team in request", r)
+		return
+	}
+
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		panic(err)
@@ -91,7 +98,7 @@ func CreateSystems(w http.ResponseWriter, r *http.Request) {
 
 	createdAt := time.Now()
 
-	doc := bson.D{{Key: "systemname", Value: strings.TrimSpace(systemInfo.SystemName)}, {Key: "users", Value: []string(systemInfo.Users)}, {Key: "lastseen", Value: -1}, {Key: "createdat", Value: createdAt.Format("01-02-2006 15:04:05")}}
+	doc := bson.D{{Key: "systemname", Value: strings.TrimSpace(systemInfo.SystemName)}, {Key: "users", Value: []string(systemInfo.Users)}, {Key: "team", Value: systemInfo.Team}, {Key: "lastseen", Value: -1}, {Key: "createdat", Value: createdAt.Format("01-02-2006 15:04:05")}}
 
 	result, err := coll.InsertOne(context.TODO(), doc)
 	if err != nil {

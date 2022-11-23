@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/MiriConf/miriconf-backend/helpers"
@@ -57,20 +56,6 @@ func EditTeams(w http.ResponseWriter, r *http.Request) {
 	var putTeam Team
 	json.Unmarshal(reqBody, &putTeam)
 
-	if strings.TrimSpace(putTeam.Name) == "" {
-		error := helpers.ErrorMsg("no team name in request")
-		w.Write(error)
-		helpers.EndpointError("no team name in request", r)
-		return
-	}
-
-	if strings.TrimSpace(putTeam.Department) == "" {
-		error := helpers.ErrorMsg("no department name in request")
-		w.Write(error)
-		helpers.EndpointError("no department name in request", r)
-		return
-	}
-
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		panic(err)
@@ -83,18 +68,9 @@ func EditTeams(w http.ResponseWriter, r *http.Request) {
 
 	coll := client.Database("miriconf").Collection("teams")
 
-	var nameCheck bson.M
-	err = coll.FindOne(context.TODO(), bson.D{{Key: "name", Value: putTeam.Name}}).Decode(&nameCheck)
-	if err != mongo.ErrNoDocuments {
-		error := helpers.ErrorMsg("team with this name already exists")
-		w.Write(error)
-		helpers.EndpointError("team with this name already exists", r)
-		return
-	}
-
 	createdAt := time.Now()
 
-	doc := bson.D{{"$set", bson.D{{Key: "name", Value: strings.TrimSpace(putTeam.Name)}, {Key: "department", Value: strings.TrimSpace(putTeam.Department)}, {Key: "createdat", Value: createdAt.Format("01-02-2006 15:04:05")}}}}
+	doc := bson.D{{"$set", bson.D{{Key: "apps", Value: []string(putTeam.Apps)}, {Key: "createdat", Value: createdAt.Format("01-02-2006 15:04:05")}}}}
 	filter := bson.D{{Key: "_id", Value: teamID}}
 
 	result, err := coll.UpdateOne(context.TODO(), filter, doc)
