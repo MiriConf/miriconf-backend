@@ -55,8 +55,9 @@ func main() {
 	// Systems
 	r.HandleFunc("/api/v1/systems/list", systems.ListSystems).Methods("GET")
 	r.HandleFunc("/api/v1/systems/ping", systems.Ping).Methods("GET")
+	r.HandleFunc("/api/v1/systems/fetch", systems.ClientFetch).Methods("GET")
 	r.HandleFunc("/api/v1/systems/get/{id}", systems.GetSystems).Methods("GET")
-	r.HandleFunc("/api/v1/systems/create", systems.CreateSystems).Methods("POST")
+	r.HandleFunc("/api/v1/systems", systems.CreateSystems).Methods("POST")
 	r.HandleFunc("/api/v1/systems/{id}", systems.EditSystems).Methods("PUT")
 	r.HandleFunc("/api/v1/systems/{id}", systems.DeleteSystems).Methods("DELETE")
 	// Templates
