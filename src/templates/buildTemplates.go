@@ -5,14 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"time"
 
+	"github.com/MiriConf/miriconf-backend/apps"
 	"github.com/MiriConf/miriconf-backend/helpers"
 	"github.com/MiriConf/miriconf-backend/teams"
 	"github.com/go-git/go-git/v5"
@@ -20,6 +18,7 @@ import (
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	jwt "github.com/golang-jwt/jwt/v4"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -113,34 +112,79 @@ func BuildTemplate(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	generated := `users.users.gbolmida = {
-		isNormalUser = true;
-		description = "George";
-		shell = pkgs.fish;
-		extraGroups = [ "networkmanager" "wheel" "docker" ];
-		packages = with pkgs; [
-		  firefox
-		  chromium
-		  unstable.vivaldi
-		  hugo
-		  gimp
-		  vim
-		  wget
-		  nano
-		  tree
-		  htop
-		  vscode
-		  code-server
-		];
-	  };`
-
-	filename := filepath.Join(directory, "generated.nix")
-	err = ioutil.WriteFile(filename, []byte(generated), 0644)
-	if err != nil {
-		panic(err)
+	type ProgramList struct {
+		Username string
+		Fullname string
+		Programs []string
 	}
 
-	_, err = repoTree.Add("generated.nix")
+	var pkgList ProgramList
+
+	pkgList.Username = "gbolmida"
+	pkgList.Fullname = "George Bolmida"
+
+	coll = client.Database("miriconf").Collection("applications")
+
+	for _, v := range result.Apps {
+		appID, err := primitive.ObjectIDFromHex(v)
+		if err != nil {
+			error := helpers.ErrorMsg("invalid app id requested")
+			w.Write(error)
+			helpers.EndpointError("invalid app id requested", r)
+			return
+		}
+
+		var appResult apps.Apps
+		err = coll.FindOne(context.TODO(), bson.D{{Key: "_id", Value: appID}}).Decode(&appResult)
+		if err != nil {
+			if err == mongo.ErrNoDocuments {
+				if err != nil {
+					error := helpers.ErrorMsg("no app matching id requested")
+					w.Write(error)
+					helpers.EndpointError("no app matching id requested", r)
+					return
+				}
+			}
+			log.Fatal(err)
+		}
+
+		pkgList.Programs = append(pkgList.Programs, appResult.Name)
+	}
+
+	resultTemp, err := os.Create(directory + "/miriconf.nix")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resultTemp.Close()
+
+	var pkgsTemplate = `
+{ config, pkgs, ... }:
+
+{
+  users.users.{{ .Username }} = {
+	isNormalUser = true;
+	description = "{{ .Fullname }}";
+	shell = pkgs.fish;
+	extraGroups = [ "networkmanager" "wheel" ];
+	packages = with pkgs; [
+	{{- range .Programs }}
+	  {{ . }}
+	{{- end }}
+	];
+  };
+	
+  nixpkgs.config.allowUnfree = true;
+}
+`
+
+	template := template.Must(template.New("pkgs").Parse(pkgsTemplate))
+
+	err = template.Execute(resultTemp, pkgList)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = repoTree.Add("miriconf.nix")
 	if err != nil {
 		panic(err)
 	}
@@ -165,38 +209,4 @@ func BuildTemplate(w http.ResponseWriter, r *http.Request) {
 	helpers.SuccessLog(r)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode("build commited successfully with message: " + obj.Message)
-}
-
-func ParseTemplate() {
-	data := struct {
-		Username string
-		GitUser  string
-		GitEmail string
-	}{
-		Username: "gbolmida",
-		GitUser:  "test-user",
-		GitEmail: "gbolmida@georgebolmida.com",
-	}
-
-	result, err := os.Create("/templates/git.nix")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer result.Close()
-
-	template, err := template.ParseFiles("/templates/nix.tmpl")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = template.Execute(result, data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	result, err = os.Open("/templates/git.nix")
-	if err != nil {
-		log.Fatal(err)
-	}
-	io.Copy(os.Stdout, result)
 }
