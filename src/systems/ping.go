@@ -48,7 +48,7 @@ func Ping(w http.ResponseWriter, r *http.Request) {
 
 	systemData := strings.Split(headerToken, ".")
 
-	tokenDec, err := base64.StdEncoding.DecodeString(systemData[1])
+	tokenDec, err := base64.RawStdEncoding.DecodeString(systemData[1])
 	if err != nil {
 		panic(err)
 	}
