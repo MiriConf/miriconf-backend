@@ -10,6 +10,7 @@ type Team struct {
 }
 
 type GetTeam struct {
+	ID         string   `json:"_id" bson:"_id"`
 	Name       string   `json:"name" bson:"name"`
 	Department string   `json:"department" bson:"department"`
 	SourceRepo string   `json:"source_repo" bson:"source_repo"`
