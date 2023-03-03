@@ -84,12 +84,11 @@ func EditUsers(w http.ResponseWriter, r *http.Request) {
 	coll := client.Database("miriconf").Collection("users")
 
 	var nameCheck bson.M
-	err = coll.FindOne(context.TODO(), bson.D{{Key: "email", Value: putUser.Email}}).Decode(&nameCheck)
-	if err != mongo.ErrNoDocuments {
-		error := helpers.ErrorMsg("user with this email already exists")
-		w.Write(error)
-		helpers.EndpointError("user with this email already exists", r)
-		return
+    filter := bson.M{"email": putUser.Email}
+    err = coll.FindOne(context.TODO(), filter).Decode(&nameCheck)
+    if err != mongo.ErrNoDocuments {
+       error := helpers.ErrorMsg("user with this name already exists")
+       w.Write(error)
 	}
 
 	createdAt := time.Now()
